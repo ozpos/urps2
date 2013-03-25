@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  controller_action_id: 
+  role_id: 
+
+two:
+  controller_action_id: 
+  role_id: 
