@@ -1,5 +1,16 @@
 class ControllerActionsController < ApplicationController
   before_action :set_controller_action, only: [:show, :edit, :update, :destroy]
+  before_filter :process_permissions_attrs, only: [:create, :update, :update_multiple]
+
+  def process_permissions_attrs
+    if params[:controller_action].is_a? Hash  # Single
+      params[:controller_action][:interactions_attributes].values.each do |per_attr|
+        per_attr[:_destroy] = true if per_attr[:enable] != '1'
+      end
+      a=1
+    else # collection
+    end
+  end
 
   # GET /controller_actions
   # GET /controller_actions.json

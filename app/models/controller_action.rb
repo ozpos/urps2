@@ -5,6 +5,10 @@ class ControllerAction < ActiveRecord::Base
   has_many :interactions, dependent: :destroy
   has_many :roles, through: :interactions
 
+  accepts_nested_attributes_for :roles, :interactions, :allow_destroy => true
+#  attr_accessible :name
+#  attr_accessible :controller_name_id, :action_name_id, :role_id, :interactions_attributes
+
   scope :controllers, lambda {|name| where("controller_name_id = ?", name)}
   scope :actions, lambda {|name| where("action_name_id = ?", name)}
 
