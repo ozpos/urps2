@@ -76,6 +76,8 @@ class ControllerActionsController < ApplicationController
 
 
   def edit_multiple
+    @edit_multiple_commit = params[:commit]
+    @edit_multiple_action = params[:actions]
     if params[:commit] == 'Edit Action'
       @title = "Editing action " + ActionName.find(params[:actions]).name.capitalize + " for all Controllers"
       @controller_actions = ControllerAction.actions(params[:actions]).all
@@ -86,25 +88,17 @@ class ControllerActionsController < ApplicationController
   end
 
   def update_multiple
-    @controller_actions = ControllerAction.find(params[:controller_action_ids])
-    ControllerAction.where(:id => params[:controller_action_ids].collect {|id| id.to_i}).update_all(params[:controller_action]) #.update_all(params[:controller_action])
-    @controller_actions.each do |ca|
-      @res = ca.update_attributes(params[:controller_action])
-    end
-
-    @controller_actions = ControllerAction.update(params[:controller_action][:interactions_attributes].keys, params[:controller_action][:interactions_attributes].values).reject { |p| p.errors.empty? }
-                                                                                                                                #params[:controller_action][:interactions_attributes].fetch('0').delete("id")
-                                                                                                                                #@controller_actions.each do |controller_action|
-                                                                                                                                #     @ca = ControllerAction.update(params[:controller_action][:interactions_attributes].values,params[:controller_action][:interactions_attributes].keys)  #.reject { |k,v| v.blank? })
-                                                                                                                                #end
-    params[:controller_action][:interactions_attributes].each do |attrs|
-      @controller_action = ControllerAction.find(attrs[1].fetch("id"))
-      @controller_actions << @controller_action.update_attributes(params[:controller_attribute])
-      #(attrs[1].values, attrs[1].keys.collect {|k| k.to_s}) #.reject { |p| p.errors.empty? }
+    @edit_multiple = params[:commit]
+    if params[:commit] == 'Edit Action'
+      @title = "Editing action " + ActionName.find(params[:actions]).name.capitalize + " for all Controllers"
+      @controller_actions = ControllerAction.actions(params[:actions]).all
+    else
+ #     @title = "Editing controller " + ControllerName.find(params[:controllers]).name.capitalize + " for all Actions"
+      @controller_actions = ControllerAction.controllers(params[:controllers]).all
     end
 
     respond_to do |format|
-      if @controller_actions.update_attributes(params[:controller_action])
+      if @controller_actions.update(controller_actions_params)
         format.html { redirect_to @controller_action, notice: 'Controller action was successfully updated.' }
         format.json { head :no_content }
       else
@@ -131,5 +125,8 @@ class ControllerActionsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def controller_action_params
       params.require(:controller_action).permit!
+    end
+    def controller_actions_params
+      params.require(:controller_actions).permit!
     end
 end
